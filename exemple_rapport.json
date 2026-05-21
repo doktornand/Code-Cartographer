@@ -1,0 +1,812 @@
+{
+  "index": {
+    "root_path": "/home/claude/code_analyzer/test_repo",
+    "analyzed_at": "2026-05-21T07:41:52.247842",
+    "total_files": 4,
+    "files_by_language": {
+      "python": 1,
+      "csharp": 1,
+      "javascript": 1,
+      "powershell": 1
+    },
+    "all_external_dependencies": [
+      "Az.Accounts",
+      "Az.Resources",
+      "Az.WebSites",
+      "Microsoft.Extensions.Logging",
+      "Newtonsoft.Json",
+      "System",
+      "System.Collections.Generic",
+      "System.Linq",
+      "axios",
+      "events",
+      "lodash",
+      "numpy",
+      "requests"
+    ],
+    "dependency_graph": {
+      "main.py": [
+        "json",
+        "os",
+        "pathlib",
+        "sys",
+        "typing"
+      ],
+      "services/DataService.cs": [],
+      "services/api.js": [],
+      "utils/deploy.ps1": []
+    }
+  },
+  "files": [
+    {
+      "file_path": "main.py",
+      "file_name": "main.py",
+      "language": "python",
+      "size_bytes": 1854,
+      "sha256": "1b4bb7280516d089fbc4c087fc6c459f5df4f1c4728860f200c5f66efdee23b3",
+      "lines_total": 62,
+      "lines_code": 49,
+      "lines_comments": 5,
+      "lines_blank": 8,
+      "analyzed_at": "2026-05-21T07:41:52.240399",
+      "imports": [
+        {
+          "module": "os",
+          "alias": null,
+          "items": [],
+          "is_external": false,
+          "line": 2
+        },
+        {
+          "module": "sys",
+          "alias": null,
+          "items": [],
+          "is_external": false,
+          "line": 3
+        },
+        {
+          "module": "json",
+          "alias": null,
+          "items": [],
+          "is_external": false,
+          "line": 4
+        },
+        {
+          "module": "requests",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 5
+        },
+        {
+          "module": "numpy",
+          "alias": "np",
+          "items": [],
+          "is_external": true,
+          "line": 6
+        },
+        {
+          "module": "pathlib",
+          "alias": null,
+          "items": [
+            "Path"
+          ],
+          "is_external": false,
+          "line": 7
+        },
+        {
+          "module": "typing",
+          "alias": null,
+          "items": [
+            "Optional"
+          ],
+          "is_external": false,
+          "line": 8
+        }
+      ],
+      "functions": [
+        {
+          "name": "load_config",
+          "start_line": 34,
+          "end_line": 43,
+          "parameters": [
+            "path"
+          ],
+          "return_type": "Optional[dict]",
+          "docstring": "Charge la configuration depuis un fichier JSON.",
+          "source_code": "def load_config(path: str) -> Optional[dict]:\n    \"\"\"Charge la configuration depuis un fichier JSON.\"\"\"\n    try:\n        with open(path) as f:\n            return json.load(f)\n    except FileNotFoundError:\n        return None\n    except json.JSONDecodeError as e:\n        print(f\"Erreur JSON : {e}\")\n        return None",
+          "local_variables": [],
+          "calls": [
+            "open",
+            "json.load",
+            "print"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 4
+        },
+        {
+          "name": "fetch_data",
+          "start_line": 45,
+          "end_line": 55,
+          "parameters": [
+            "url",
+            "retries"
+          ],
+          "return_type": "list",
+          "docstring": "Récupère des données depuis une API avec retry.",
+          "source_code": "def fetch_data(url: str, retries: int = MAX_RETRIES) -> list:\n    \"\"\"Récupère des données depuis une API avec retry.\"\"\"\n    for attempt in range(retries):\n        try:\n            response = requests.get(url, timeout=10)\n            response.raise_for_status()\n            return response.json()\n        except requests.RequestException as e:\n            if attempt == retries - 1:\n                raise\n    return []",
+          "local_variables": [
+            "response"
+          ],
+          "calls": [
+            "range",
+            "requests.get",
+            "response.raise_for_status",
+            "response.json"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 4
+        },
+        {
+          "name": "__init__",
+          "start_line": 16,
+          "end_line": 18,
+          "parameters": [
+            "self",
+            "config"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "    def __init__(self, config: dict):\n        self.config = config\n        self.cache = {}",
+          "local_variables": [],
+          "calls": [],
+          "decorators": [],
+          "is_method": true,
+          "parent_class": "DataProcessor",
+          "cyclomatic_complexity": 1
+        },
+        {
+          "name": "process",
+          "start_line": 20,
+          "end_line": 27,
+          "parameters": [
+            "self",
+            "data"
+          ],
+          "return_type": "dict",
+          "docstring": "Traite une liste de données et retourne un résumé.",
+          "source_code": "    def process(self, data: list) -> dict:\n        \"\"\"Traite une liste de données et retourne un résumé.\"\"\"\n        result = {}\n        for item in data:\n            if item.get(\"active\"):\n                key = item[\"id\"]\n                result[key] = self._transform(item)\n        return result",
+          "local_variables": [
+            "result",
+            "key"
+          ],
+          "calls": [
+            "item.get",
+            "self._transform"
+          ],
+          "decorators": [],
+          "is_method": true,
+          "parent_class": "DataProcessor",
+          "cyclomatic_complexity": 3
+        },
+        {
+          "name": "_transform",
+          "start_line": 29,
+          "end_line": 32,
+          "parameters": [
+            "self",
+            "item"
+          ],
+          "return_type": "dict",
+          "docstring": null,
+          "source_code": "    def _transform(self, item: dict) -> dict:\n        value = item.get(\"value\", 0)\n        scaled = value * self.config.get(\"scale_factor\", 1.0)\n        return {\"original\": value, \"scaled\": scaled}",
+          "local_variables": [
+            "value",
+            "scaled"
+          ],
+          "calls": [
+            "item.get",
+            "self.config.get"
+          ],
+          "decorators": [],
+          "is_method": true,
+          "parent_class": "DataProcessor",
+          "cyclomatic_complexity": 1
+        }
+      ],
+      "classes": [
+        {
+          "name": "DataProcessor",
+          "start_line": 13,
+          "end_line": 32,
+          "base_classes": [],
+          "methods": [
+            "__init__",
+            "process",
+            "_transform"
+          ],
+          "class_variables": [],
+          "docstring": "Traitement et transformation de données."
+        }
+      ],
+      "global_variables": [
+        {
+          "name": "MAX_RETRIES",
+          "scope": "global",
+          "assigned_in": [
+            "<module>"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "BASE_URL",
+          "scope": "global",
+          "assigned_in": [
+            "<module>"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        }
+      ],
+      "avg_function_complexity": 2.6,
+      "max_function_complexity": 4,
+      "external_dependencies": [
+        "numpy",
+        "requests"
+      ],
+      "internal_dependencies": [
+        "json",
+        "os",
+        "pathlib",
+        "sys",
+        "typing"
+      ],
+      "summary": "Fichier PYTHON · 5 fonction(s) · 1 classe(s) | Dépendances externes : numpy, requests | Fonction la plus complexe : load_config (complexité=4)"
+    },
+    {
+      "file_path": "services/DataService.cs",
+      "file_name": "DataService.cs",
+      "language": "csharp",
+      "size_bytes": 1628,
+      "sha256": "4cfc70698d9551c52a0ff9149b512ef3e2e33260bcbe267bbcbc0f96bddfb64a",
+      "lines_total": 51,
+      "lines_code": 43,
+      "lines_comments": 2,
+      "lines_blank": 6,
+      "analyzed_at": "2026-05-21T07:41:52.243961",
+      "imports": [
+        {
+          "module": "System",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 1
+        },
+        {
+          "module": "System.Collections.Generic",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 2
+        },
+        {
+          "module": "System.Linq",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 3
+        },
+        {
+          "module": "Newtonsoft.Json",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 4
+        },
+        {
+          "module": "Microsoft.Extensions.Logging",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 5
+        }
+      ],
+      "functions": [
+        {
+          "name": "DataService",
+          "start_line": 14,
+          "end_line": 21,
+          "parameters": [
+            "ILogger<DataService> logger",
+            "string connectionString"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "\n\n        public DataService(ILogger<DataService> logger, string connectionString)\n        {\n            _logger = logger;\n            _connectionString = connectionString;\n            _instanceCount++;\n        }",
+          "local_variables": [],
+          "calls": [
+            "DataService"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 1
+        },
+        {
+          "name": "GetAll",
+          "start_line": 21,
+          "end_line": 28,
+          "parameters": [
+            "bool activeOnly = true"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "\n\n        public List<DataItem> GetAll(bool activeOnly = true)\n        {\n            _logger.LogInformation(\"Fetching all items\");\n            var query = BuildQuery(activeOnly);\n            return ExecuteQuery<DataItem>(query);\n        }",
+          "local_variables": [
+            "activeOnly",
+            "query"
+          ],
+          "calls": [
+            "LogInformation",
+            "GetAll",
+            "BuildQuery"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 1
+        },
+        {
+          "name": "BuildQuery",
+          "start_line": 28,
+          "end_line": 35,
+          "parameters": [
+            "bool activeOnly"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "\n\n        private string BuildQuery(bool activeOnly)\n        {\n            var conditions = new List<string>();\n            if (activeOnly) conditions.Add(\"IsActive = 1\");\n            return $\"SELECT * FROM Items WHERE {string.Join(\" AND \", conditions)}\";\n        }",
+          "local_variables": [
+            "conditions"
+          ],
+          "calls": [
+            "if",
+            "Join",
+            "Add",
+            "BuildQuery"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 2
+        },
+        {
+          "name": "Create",
+          "start_line": 41,
+          "end_line": 49,
+          "parameters": [
+            "DataItemDto dto"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "\n\n        public DataItem Create(DataItemDto dto)\n        {\n            if (dto == null) throw new ArgumentNullException(nameof(dto));\n            var item = new DataItem { Name = dto.Name, CreatedAt = DateTime.UtcNow };\n            _logger.LogInformation($\"Creating item: {item.Name}\");\n            return item;\n        }",
+          "local_variables": [
+            "item"
+          ],
+          "calls": [
+            "nameof",
+            "LogInformation",
+            "if",
+            "Create",
+            "ArgumentNullException"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 2
+        }
+      ],
+      "classes": [
+        {
+          "name": "DataService",
+          "start_line": 10,
+          "end_line": 10,
+          "base_classes": [
+            "IDataService"
+          ],
+          "methods": [],
+          "class_variables": [],
+          "docstring": null
+        }
+      ],
+      "global_variables": [
+        {
+          "name": "_connectionString",
+          "scope": "local",
+          "assigned_in": [
+            "DataService"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "_instanceCount",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [
+            "DataService"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "activeOnly",
+          "scope": "local",
+          "assigned_in": [
+            "GetAll"
+          ],
+          "used_in": [
+            "BuildQuery"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "query",
+          "scope": "local",
+          "assigned_in": [
+            "GetAll"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "conditions",
+          "scope": "local",
+          "assigned_in": [
+            "BuildQuery"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "item",
+          "scope": "local",
+          "assigned_in": [
+            "Create"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        }
+      ],
+      "avg_function_complexity": 1.5,
+      "max_function_complexity": 2,
+      "external_dependencies": [
+        "Microsoft.Extensions.Logging",
+        "Newtonsoft.Json",
+        "System",
+        "System.Collections.Generic",
+        "System.Linq"
+      ],
+      "internal_dependencies": [],
+      "summary": "Fichier CSHARP · 4 fonction(s) · 1 classe(s) | Dépendances externes : Microsoft.Extensions.Logging, Newtonsoft.Json, System, System.Collections.Generic, System.Linq | Fonction la plus complexe : BuildQuery (complexité=2)"
+    },
+    {
+      "file_path": "services/api.js",
+      "file_name": "api.js",
+      "language": "javascript",
+      "size_bytes": 1337,
+      "sha256": "cebf6e84855b28c6eab13af405911b6f5aff06c48f6df2f42549bf0e7d3a0009",
+      "lines_total": 50,
+      "lines_code": 38,
+      "lines_comments": 6,
+      "lines_blank": 6,
+      "analyzed_at": "2026-05-21T07:41:52.245605",
+      "imports": [
+        {
+          "module": "axios",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 4
+        },
+        {
+          "module": "events",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 5
+        },
+        {
+          "module": "lodash",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 6
+        }
+      ],
+      "functions": [
+        {
+          "name": "buildQuery",
+          "start_line": 37,
+          "end_line": 39,
+          "parameters": [
+            "filters"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "const buildQuery = (filters) => {\n    return _.omitBy(filters, (v) => v === null || v === undefined);\n}",
+          "local_variables": [
+            "buildQuery"
+          ],
+          "calls": [
+            "omitBy"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 1
+        },
+        {
+          "name": "formatResponse",
+          "start_line": 41,
+          "end_line": 47,
+          "parameters": [
+            "data",
+            "schema"
+          ],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "const formatResponse = (data, schema) => {\n    if (!data || !schema) return null;\n    return Object.keys(schema).reduce((acc, key) => {\n        acc[key] = data[key] ?? schema[key].default;\n        return acc;\n    }, {});\n}",
+          "local_variables": [
+            "formatResponse"
+          ],
+          "calls": [
+            "if",
+            "reduce",
+            "keys"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 2
+        }
+      ],
+      "classes": [
+        {
+          "name": "ApiClient",
+          "start_line": 11,
+          "end_line": 11,
+          "base_classes": [
+            "EventEmitter"
+          ],
+          "methods": [],
+          "class_variables": [],
+          "docstring": null
+        }
+      ],
+      "global_variables": [
+        {
+          "name": "_",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [
+            "buildQuery"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "DEFAULT_TIMEOUT",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "requestCount",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "response",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "buildQuery",
+          "scope": "local",
+          "assigned_in": [
+            "buildQuery"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "formatResponse",
+          "scope": "local",
+          "assigned_in": [
+            "formatResponse"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        }
+      ],
+      "avg_function_complexity": 1.5,
+      "max_function_complexity": 2,
+      "external_dependencies": [
+        "axios",
+        "events",
+        "lodash"
+      ],
+      "internal_dependencies": [],
+      "summary": "Fichier JAVASCRIPT · 2 fonction(s) · 1 classe(s) | Dépendances externes : axios, events, lodash | Fonction la plus complexe : formatResponse (complexité=2)"
+    },
+    {
+      "file_path": "utils/deploy.ps1",
+      "file_name": "deploy.ps1",
+      "language": "powershell",
+      "size_bytes": 1569,
+      "sha256": "3d9dd785a51e2215418121e1ed3d7e6b0d343513ffc10e04be4bd26125b81340",
+      "lines_total": 59,
+      "lines_code": 43,
+      "lines_comments": 10,
+      "lines_blank": 6,
+      "analyzed_at": "2026-05-21T07:41:52.247376",
+      "imports": [
+        {
+          "module": "Az.Accounts",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 1
+        },
+        {
+          "module": "Az.Resources",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 16
+        },
+        {
+          "module": "Az.WebSites",
+          "alias": null,
+          "items": [],
+          "is_external": true,
+          "line": 17
+        }
+      ],
+      "functions": [
+        {
+          "name": "Connect-Azure",
+          "start_line": 22,
+          "end_line": 33,
+          "parameters": [],
+          "return_type": null,
+          "docstring": "Authentification Azure",
+          "source_code": "function Connect-Azure {\n    <# Authentification Azure #>\n    param([string]$TenantId)\n    try {\n        Connect-AzAccount -TenantId $TenantId -ErrorAction Stop\n        Write-Host \"Connecté à Azure\"\n        return $true\n    } catch {\n        Write-Error \"Échec connexion : $_\"\n        return $false\n    }\n}",
+          "local_variables": [],
+          "calls": [
+            "param"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 2
+        },
+        {
+          "name": "Deploy-Application",
+          "start_line": 35,
+          "end_line": 53,
+          "parameters": [],
+          "return_type": null,
+          "docstring": null,
+          "source_code": "function Deploy-Application {\n    param([string]$AppName, [string]$PackagePath)\n    $attempt = 0\n    while ($attempt -lt $MaxRetries) {\n        $attempt++\n        try {\n            Publish-AzWebApp -ResourceGroupName $ResourceGroup `\n                -Name $AppName -ArchivePath $PackagePath -Force\n            $deployLog += \"SUCCESS: $AppName déployé à $timestamp\"\n            return $true\n        } catch {\n            if ($attempt -eq $MaxRetries) {\n                $deployLog += \"FAILED: $AppName après $MaxRetries tentatives\"\n                return $false\n            }\n            Start-Sleep -Seconds (2 * $attempt)\n        }\n    }\n}",
+          "local_variables": [
+            "attempt"
+          ],
+          "calls": [
+            "Seconds",
+            "param",
+            "if",
+            "while"
+          ],
+          "decorators": [],
+          "is_method": false,
+          "parent_class": null,
+          "cyclomatic_complexity": 4
+        }
+      ],
+      "classes": [],
+      "global_variables": [
+        {
+          "name": "ResourceGroup",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [
+            "Deploy-Application"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "MaxRetries",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [
+            "Deploy-Application"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "deployLog",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [
+            "Deploy-Application"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "timestamp",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [
+            "Deploy-Application"
+          ],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "attempt",
+          "scope": "local",
+          "assigned_in": [
+            "Deploy-Application"
+          ],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        },
+        {
+          "name": "result",
+          "scope": "global",
+          "assigned_in": [],
+          "used_in": [],
+          "type_hint": null,
+          "default_value": null
+        }
+      ],
+      "avg_function_complexity": 3.0,
+      "max_function_complexity": 4,
+      "external_dependencies": [
+        "Az.Accounts",
+        "Az.Resources",
+        "Az.WebSites"
+      ],
+      "internal_dependencies": [],
+      "summary": "Fichier POWERSHELL · 2 fonction(s) · 0 classe(s) | Dépendances externes : Az.Accounts, Az.Resources, Az.WebSites | Fonction la plus complexe : Deploy-Application (complexité=4)"
+    }
+  ]
+}
