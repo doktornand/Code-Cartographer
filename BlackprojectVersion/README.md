@@ -1,5 +1,3 @@
-Voici une proposition de **README.md ultra-détaillé, professionnel et prêt à l'emploi** pour votre dépôt GitHub. Il est structuré pour être à la fois informatif pour les développeurs qui veulent l'utiliser et clair pour les mainteneurs qui veulent comprendre son architecture.
-
 ---
 
 # 🗺️ CodeCartographer
